@@ -10,12 +10,14 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    private var rootFlow: RootFlowCoordinator = RootFlowCoordinator(navigationController: UINavigationController())
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let w = UIWindow(windowScene: windowScene)
-        w.rootViewController = ViewController()
+        w.rootViewController = rootFlow.navigationController
+        rootFlow.start()
         w.makeKeyAndVisible()
         window = w
     }
