@@ -24,7 +24,8 @@ class RootFlowCoordinator: FlowCoordinatorProtocol {
     
     private var newsViewController: NewsListViewController?
     private func showNewsViewController() {
-        let viewModel = NewsListViewModel()
+        let newsServices = NewsListServices(parser: RSSParser())
+        let viewModel = NewsListViewModel(newsServices: newsServices)
         newsViewController = NewsListViewController(viewModel)
         navigationController.pushViewController(newsViewController!, animated: true)
     }
