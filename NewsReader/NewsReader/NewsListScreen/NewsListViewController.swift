@@ -47,8 +47,6 @@ class NewsListViewController: UIViewController {
         }
     }
     
-    
-    
     //MARK: Setup Subviews
     enum Section {
         case main

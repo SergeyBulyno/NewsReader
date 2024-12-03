@@ -126,6 +126,8 @@ class NewsListCollectionViewCell: UICollectionViewCell {
         newsContentView.addSubview(toggleIndicator)
         contentView.addSubview(toggleButton)
         toggleButton.addTarget(self, action: #selector(toggleCell(button:)), for: .touchUpInside)
+        
+        newsContentView.addSubview(newsReadView)
     }
     
     @objc func toggleCell(button: UIButton) {
@@ -142,6 +144,8 @@ class NewsListCollectionViewCell: UICollectionViewCell {
         toggleIndicator.translatesAutoresizingMaskIntoConstraints = false
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         loadingImageView.translatesAutoresizingMaskIntoConstraints = false
+        newsReadView.translatesAutoresizingMaskIntoConstraints = false
+        print("\(newsReadView.frame)")
         NSLayoutConstraint.activate([
             newsContentView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: hSideOffset),
             newsContentView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: hSideOffset),
@@ -170,6 +174,12 @@ class NewsListCollectionViewCell: UICollectionViewCell {
             toggleButton.bottomAnchor.constraint(equalTo: toggleIndicator.bottomAnchor, constant: vSpace),
             toggleButton.leadingAnchor.constraint(equalTo: newsContentView.leadingAnchor),
             toggleButton.trailingAnchor.constraint(equalTo: newsContentView.trailingAnchor),
+            
+            
+            newsReadView.centerYAnchor.constraint(equalTo: titleStackView.centerYAnchor),
+            newsReadView.trailingAnchor.constraint(equalTo: titleStackView.leadingAnchor, constant: -3.0),
+            newsReadView.heightAnchor.constraint(equalToConstant: newsReadView.frame.height),
+            newsReadView.widthAnchor.constraint(equalToConstant: newsReadView.frame.width),
         ])
         
         toggleIndicator.setContentHuggingPriority(.defaultHigh, for: .vertical)

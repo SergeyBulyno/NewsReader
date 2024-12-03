@@ -18,4 +18,6 @@ class NewsItem {
     var pubDate: Date = Date()
     var imageUrl: String = ""
     var sourceName: String = ""
+    var isRead: Bool = false
+    
 }
