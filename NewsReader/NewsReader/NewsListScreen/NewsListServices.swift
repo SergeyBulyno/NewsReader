@@ -7,4 +7,5 @@
 
 struct NewsListServices {
     let parser: RSSParser
+    let localizationProvider: LocalizationProvider
 }

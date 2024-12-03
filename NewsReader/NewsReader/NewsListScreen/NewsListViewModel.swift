@@ -27,7 +27,12 @@ class NewsListViewModel {
 }
 
 extension NewsListViewModel: ViewModelProtocol {
+    var title: String {
+        return self.services.localizationProvider.string(forKey: "news_title", placeholder: "Новости")
+    }
+    
     typealias itemVM = NewsItemViewModel
+    
     //MARK: - Fetch data
     func fetchData() {
         let sources = self.getEnabledSources()

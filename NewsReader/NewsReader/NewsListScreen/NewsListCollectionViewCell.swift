@@ -145,7 +145,6 @@ class NewsListCollectionViewCell: UICollectionViewCell {
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         loadingImageView.translatesAutoresizingMaskIntoConstraints = false
         newsReadView.translatesAutoresizingMaskIntoConstraints = false
-        print("\(newsReadView.frame)")
         NSLayoutConstraint.activate([
             newsContentView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: hSideOffset),
             newsContentView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: hSideOffset),

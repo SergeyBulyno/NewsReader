@@ -57,6 +57,7 @@ class NewsListViewController: UIViewController {
     
     private func setupController() {
         view.backgroundColor = .white
+        self.title = self.viewModel.title
         setupSubviews()
         setupConstraints()
         setupObservers()
