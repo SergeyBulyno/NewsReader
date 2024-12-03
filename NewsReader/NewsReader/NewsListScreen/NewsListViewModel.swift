@@ -7,20 +7,10 @@
 //
 
 import Foundation
-typealias VoidClosure = () -> Void
-typealias ResultClosure = (Bool) -> Void
-//typealias NewsItemsClosure = (Bool) -> Void
-
-
-protocol ViewModelProtocol {
-    func fetchData()
-    
-    var isLoadingClosure: ResultClosure? { get set }
-    //var reloadData: (([NewsItem])->Void)? { get set }
-}
 
 class NewsListViewModel {
-    var isLoadingClosure: ((Bool) -> Void)?
+    var isLoadingClosure: ResultClosure?
+    var reloadDataClosure: (([NewsItemViewModel]) -> Void)?
     //TODO: use combine and observable
     var isLoading: Bool = false {
         didSet {
@@ -28,6 +18,7 @@ class NewsListViewModel {
         }
     }
     
+    private(set) var newsItems: [NewsItemViewModel] = []
     private let services: NewsListServices
     
     init(newsServices: NewsListServices) {
@@ -36,6 +27,7 @@ class NewsListViewModel {
 }
 
 extension NewsListViewModel: ViewModelProtocol {
+    typealias itemVM = NewsItemViewModel
     //MARK: - Fetch data
     func fetchData() {
         let sources = self.getEnabledSources()
@@ -44,28 +36,38 @@ extension NewsListViewModel: ViewModelProtocol {
             Task {
                 do {
                     let items = try await RSSParser().parseFeed(url: source.url,
-                                                                    sourceName: source.name)
-//                    print("\(Thread.isMainThread) ")
-//                    print("\(items)")
+                                                                sourceName: source.name)
+                    let vmItems = items.map { NewsItemViewModel(newsItem: $0) }
+                    DispatchQueue.main.async { [weak self] in
+                        self?.showData(items: vmItems)
+                    }
+                    //                   print("\(Thread.isMainThread) ")
+                    //print("\(items)")
                 } catch let error {
-                    
                     print((error as? RSSError)?.localizedDescription ?? "")
                 }
+                //TODO: Use MainActor
                 DispatchQueue.main.async {[weak self] in
                     self?.isLoading = false
+                    
                 }
             }
         }
     }
     
-    func getEnabledSources() -> [NewsSource] {
+    private func showData(items: [NewsItemViewModel]) {
+        self.newsItems = items
+        self.reloadDataClosure?(items)
+    }
+    
+    private func getEnabledSources() -> [NewsSource] {
         let allSources = [
-//                            NewsSource(name: "Ведомости",
-//                                                      url: "https://www.vedomosti.ru/info/rss",
-//                                                      isEnabled: true),
-            NewsSource(name: "Лента.ру",
-                       url: "http://lenta.ru/rss",
-                       isEnabled: true),
+            //                            NewsSource(name: "Ведомости",
+            //                                                      url: "https://www.vedomosti.ru/info/rss",
+            //                                                      isEnabled: true),
+//            NewsSource(name: "Лента.ру",
+//                       url: "http://lenta.ru/rss",
+//                       isEnabled: true),
             NewsSource(name: "RBC",
                        url:"http://static.feed.rbc.ru/rbc/internal/rss.rbc.ru/rbc.ru/news.rss",
                        isEnabled: true)
