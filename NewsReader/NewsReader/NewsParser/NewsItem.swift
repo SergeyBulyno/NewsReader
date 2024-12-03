@@ -8,6 +8,10 @@
 import Foundation
 
 class NewsItem {
+    var id: String {
+        return uuid.uuidString
+    }
+    var uuid: UUID = UUID()
     var title: String = ""
     var link: String = ""
     var newsDescription: String = ""
