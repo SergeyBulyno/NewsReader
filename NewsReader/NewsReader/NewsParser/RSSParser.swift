@@ -10,6 +10,7 @@ import Foundation
 class RSSParser: NSObject {
     private var currentElement = ""
     private var currentItem: NewsItem?
+    private var currentPubDate: String = ""
     private var items: [NewsItem] = []
     private var currentSourceName = ""
     
@@ -31,8 +32,12 @@ class RSSParser: NSObject {
             throw RSSError.invalidResponseCode(httpResponse.statusCode)
         }
         
+//        let str = String(decoding: data, as: UTF8.self)
+//        print(str)
+        
         return try await withCheckedThrowingContinuation { continuation in
             parserContinuation = continuation
+           
             let parser = XMLParser(data: data)
             parser.delegate = self
             parser.parse()
@@ -48,6 +53,7 @@ extension RSSParser: XMLParserDelegate {
     
     func parserDidEndDocument(_ parser: XMLParser) {
         //delegate?.didParseItems(items)
+        
         parserContinuation?.resume(returning: items)
     }
     
@@ -66,7 +72,7 @@ extension RSSParser: XMLParserDelegate {
         case "description":
             currentItem?.newsDescription += string
         case "pubDate":
-            currentItem?.pubDateString += string
+            currentPubDate += string
         case "enclosure":
             // Handle in `didStartElement`
             break
@@ -85,6 +91,7 @@ extension RSSParser: XMLParserDelegate {
         
         if elementName == "item" {
             currentItem = NewsItem()
+            currentPubDate = ""
             currentItem?.sourceName = currentSourceName
         }
         
@@ -102,27 +109,15 @@ extension RSSParser: XMLParserDelegate {
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "en_US_POSIX")
             formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
-            
-            if let date = formatter.date(from: item.pubDateString) {
+            if let date = formatter.date(from: currentPubDate) {
                 item.pubDate = date
             }
             
             items.append(item)
             currentItem = nil
+            currentPubDate = ""
         }
         
         currentElement = ""
     }
 }
-
-extension NewsItem {
-    var pubDateString: String {
-        get {
-            return ""
-        }
-        set {
-            
-        }
-    }
-}
-
