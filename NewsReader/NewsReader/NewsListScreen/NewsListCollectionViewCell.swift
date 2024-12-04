@@ -171,11 +171,10 @@ class NewsListCollectionViewCell: UICollectionViewCell {
             subtitleLabel.leadingAnchor.constraint(equalTo: newsContentView.leadingAnchor),
             subtitleLabel.trailingAnchor.constraint(equalTo: newsContentView.trailingAnchor),
             
-            toggleButton.topAnchor.constraint(equalTo: toggleIndicator.topAnchor, constant: -vSpace),
+            toggleButton.topAnchor.constraint(equalTo: toggleIndicator.topAnchor),
             toggleButton.bottomAnchor.constraint(equalTo: toggleIndicator.bottomAnchor, constant: vSpace),
             toggleButton.leadingAnchor.constraint(equalTo: newsContentView.leadingAnchor),
             toggleButton.trailingAnchor.constraint(equalTo: newsContentView.trailingAnchor),
-            
             
             newsReadView.centerYAnchor.constraint(equalTo: titleStackView.centerYAnchor),
             newsReadView.trailingAnchor.constraint(equalTo: titleStackView.leadingAnchor, constant: -3.0),
