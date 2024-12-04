@@ -58,9 +58,25 @@ final class NewsListViewController: UIViewController {
     private func setupController() {
         view.backgroundColor = .white
         self.title = self.viewModel.title
+        setupButtons()
         setupSubviews()
         setupConstraints()
         setupObservers()
+        
+    }
+    
+    private func setupButtons() {
+        let image = UIImage(systemName: "gear")
+        let settingsButton = UIBarButtonItem(image: image,
+                                             style: .plain,
+                                             target: self,
+                                             action: #selector(openSetting))
+        
+        navigationItem.rightBarButtonItem = settingsButton
+    }
+    
+    @objc private func openSetting() {
+        viewModel.openSettingsClosure?()
     }
     
     private func setupSubviews() {

@@ -22,7 +22,6 @@ class NewsDetailsViewController: UIViewController {
         fatalError("init(coder:) Invalid way of decoding this class")
     }
     
-    
     deinit {
         print("[%@] deinit", Self.self)
     }

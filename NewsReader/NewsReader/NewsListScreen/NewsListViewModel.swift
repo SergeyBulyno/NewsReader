@@ -37,6 +37,7 @@ final class NewsListViewModel {
     }
     
     var selectItemClosure:((NewsItemViewModel) ->Void)?
+    var openSettingsClosure:VoidClosure?
     
     func selectItem(at indexPath: IndexPath) {
         guard indexPath.row < newsItems.count else { return }
@@ -79,8 +80,6 @@ extension NewsListViewModel: ViewModelProtocol, ViewModelControllerProtocol {
                     let databaseService = self.services.databaseService
                     databaseService.saveNewsItems(updatedWithRead)
                     let items = databaseService.fetchNewsItems()
-                    items.forEach({ print("Fetched db: \($0.isRead)")})
-                    
                     let vmItems = items.map {
                         return NewsItemViewModel(newsItem: $0,
                                                  placeholderImage: placeholderImage,

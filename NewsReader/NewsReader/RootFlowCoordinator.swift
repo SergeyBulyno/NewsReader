@@ -35,12 +35,19 @@ class RootFlowCoordinator: FlowCoordinatorProtocol {
             self.showNewsDetailsViewController(services: newsServices,
                                                newsItemVM: newsItem)
         }
+        viewModel.openSettingsClosure = { [weak self] in
+            guard let self else { return }
+            self.showSettingsViewController(services: newsServices)
+        }
+        
         newsViewController = NewsListViewController(viewModel)
         navigationController.pushViewController(newsViewController!, animated: true)
     }
     
-    private func showSettingsViewController() {
-       
+    private func showSettingsViewController(services: NewsListServices) {
+        let viewModel = SettingsViewModel(services: services)
+        let viewController = SettingsViewController(viewModel)
+        navigationController.pushViewController(viewController, animated: true)
     }
     
     private func showNewsDetailsViewController(services: NewsListServices,
