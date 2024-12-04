@@ -43,7 +43,7 @@ class ImageCacheService {
         guard let image = UIImage(data: data) else {
             throw URLError(.cannotDecodeContentData)
         }
-        print("!!!\(Thread.isMainThread)")
+        //print("\(Thread.isMainThread)")
         return image
     }
 

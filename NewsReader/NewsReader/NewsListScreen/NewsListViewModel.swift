@@ -41,29 +41,22 @@ extension NewsListViewModel: ViewModelProtocol {
         let sources = self.getEnabledSources()
         isLoading = sources.count > 0
         for source in sources {
-            Task {
+            Task { @MainActor in
                 do {
                     let items = try await RSSParser().parseFeed(url: source.url,
                                                                 sourceName: source.name)
                     let vmItems = items.map { NewsItemViewModel(newsItem: $0, placeholderImage: placeholderImage, imageCacheService: services.imageCacheService) }
-                    DispatchQueue.main.async { [weak self] in
-                        self?.showData(items: vmItems)
-                    }
-                    //                   print("\(Thread.isMainThread) ")
-                    //print("\(items)")
+                    self.showData(items: vmItems)
                 } catch let error {
                     print((error as? RSSError)?.localizedDescription ?? "")
                 }
-                //TODO: Use MainActor
-                DispatchQueue.main.async {[weak self] in
-                    self?.isLoading = false
-                    
-                }
+                self.isLoading = false
             }
         }
     }
     
     private func showData(items: [NewsItemViewModel]) {
+        //print("\(Thread.isMainThread) ")
         self.newsItems = items
         self.reloadDataClosure?(items)
     }
@@ -73,9 +66,9 @@ extension NewsListViewModel: ViewModelProtocol {
             //                            NewsSource(name: "Ведомости",
             //                                                      url: "https://www.vedomosti.ru/info/rss",
             //                                                      isEnabled: true),
-//            NewsSource(name: "Лента.ру",
-//                       url: "http://lenta.ru/rss",
-//                       isEnabled: true),
+            //            NewsSource(name: "Лента.ру",
+            //                       url: "http://lenta.ru/rss",
+            //                       isEnabled: true),
             NewsSource(name: "RBC",
                        url:"http://static.feed.rbc.ru/rbc/internal/rss.rbc.ru/rbc.ru/news.rss",
                        isEnabled: true)

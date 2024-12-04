@@ -27,7 +27,6 @@ class RSSParser: NSObject {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw RSSError.invalidResponse
         }
-        
         guard httpResponse.statusCode == 200 else {
             throw RSSError.invalidResponseCode(httpResponse.statusCode)
         }
