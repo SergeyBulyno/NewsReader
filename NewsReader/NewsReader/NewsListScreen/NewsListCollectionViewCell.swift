@@ -34,6 +34,7 @@ class NewsListCollectionViewCell: UICollectionViewCell {
         loadingImageView.image = nil
         loadingImageView.isHidden = true
         fetchTask?.cancel()
+        self.cellViewModel.markAsReadClosure = nil
     }
     
     private var closedConstraint: NSLayoutConstraint?
@@ -203,6 +204,9 @@ class NewsListCollectionViewCell: UICollectionViewCell {
         loadImageView(loadingImageView, from: viewModel)
         updateExpandable(viewModel.isExpanded)
         subtitleLabel.text = viewModel.description
+        viewModel.markAsReadClosure = { [weak self] in
+            self?.newsReadView.isHidden = viewModel.isRead
+        }
     }
     private var fetchTask: Task<(), Never>?
     
@@ -212,7 +216,8 @@ class NewsListCollectionViewCell: UICollectionViewCell {
         imageView.image = viewModel.placeholderImage
         fetchTask = Task { @MainActor in
             if let fetchTask = self.fetchTask, !fetchTask.isCancelled {
-                if let image = try? await viewModel.fetchImage() {
+                let imageUrl = viewModel.imageUrl
+                if let image = try? await viewModel.fetchImage(urlString: imageUrl) {
                     imageView.image = image
                 }
             }

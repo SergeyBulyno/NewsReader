@@ -6,18 +6,17 @@
 //
 
 import Foundation
+import RealmSwift
 
-class NewsItem {
-    var id: String {
-        return uuid.uuidString
-    }
-    var uuid: UUID = UUID()
-    var title: String = ""
-    var link: String = ""
-    var newsDescription: String = ""
-    var pubDate: Date = Date()
-    var imageUrl: String = ""
-    var sourceName: String = ""
-    var isRead: Bool = false
+class NewsItem: Object {
+    @Persisted var id: UUID
+    @Persisted(primaryKey: true) var guid: String = ""
+    @Persisted var title: String = ""
+    @Persisted var link: String = ""
+    @Persisted var newsDescription: String = ""
+    @Persisted var pubDate: Date = Date()
+    @Persisted var imageUrl: String = ""
+    @Persisted var sourceName: String = ""
+    @Persisted var isRead: Bool = false
     
 }

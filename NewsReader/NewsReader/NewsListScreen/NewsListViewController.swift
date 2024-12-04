@@ -7,7 +7,7 @@
 
 import UIKit
 
-class NewsListViewController: UIViewController {
+final class NewsListViewController: UIViewController {
     private(set) var viewModel: NewsListViewModel
     
     init(_ viewModel: NewsListViewModel) {

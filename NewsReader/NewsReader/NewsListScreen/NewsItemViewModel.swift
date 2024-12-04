@@ -10,7 +10,7 @@ import UIKit
 
 class NewsItemViewModel {
     var id: UUID {
-        return newsItem.uuid
+        return newsItem.id
     }
     
     private(set) var newsItem: NewsItem
@@ -57,7 +57,9 @@ class NewsItemViewModel {
     }
     
     private(set) var placeholderImage: UIImage?
+    //TODO: Replace with observing
     var updateLayoutClosure: VoidClosure?
+    var markAsReadClosure: VoidClosure?
     private let imageCacheService: ImageCacheService
     init(newsItem: NewsItem,
          isExtpandedMode: Bool = false,
@@ -69,8 +71,8 @@ class NewsItemViewModel {
         self.imageCacheService = imageCacheService
     }
     
-    func fetchImage() async throws -> UIImage {
-        return try await self.imageCacheService.loadCachedImage(from: imageUrl)
+    func fetchImage(urlString: String) async throws -> UIImage {
+        return try await self.imageCacheService.loadCachedImage(from: urlString)
     }
 }
 

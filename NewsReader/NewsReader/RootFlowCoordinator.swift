@@ -26,6 +26,7 @@ class RootFlowCoordinator: FlowCoordinatorProtocol {
     private func showNewsViewController() {
         let newsServices = NewsListServices(parser: RSSParser(),
                                             imageCacheService: ImageCacheService(),
+                                            databaseService: NewsDatabaseService(),
                                             localizationProvider: LocalizationProvider())
         let viewModel = NewsListViewModel(services: newsServices)
         viewModel.selectItemClosure = { [weak self] newsItem in
@@ -43,6 +44,10 @@ class RootFlowCoordinator: FlowCoordinatorProtocol {
     
     private func showNewsDetailsViewController(services: NewsListServices,
                                                newsItemVM: NewsItemViewModel) {
+        let databaseService = services.databaseService
+        databaseService.markAsRead(newsItemVM.newsItem)
+        newsItemVM.markAsReadClosure?()
+    
         let viewModel = NewsDetailsViewModel(services: services,
                                              newsItem: newsItemVM)
         let viewController = NewsDetailsViewController(viewModel)

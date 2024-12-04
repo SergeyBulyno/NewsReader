@@ -8,8 +8,9 @@
 
 import Foundation
 import UIKit
+import RealmSwift
 
-class NewsListViewModel {
+final class NewsListViewModel {
     var isLoadingClosure: ResultClosure?
     var reloadDataClosure: (([NewsItemViewModel]) -> Void)?
     //TODO: use combine and observable
@@ -50,8 +51,17 @@ extension NewsListViewModel: ViewModelProtocol, ViewModelControllerProtocol {
         for source in sources {
             Task { @MainActor in
                 do {
-                    let items = try await RSSParser().parseFeed(url: source.url,
-                                                                sourceName: source.name)
+                    //TODO: Move to separated service
+                    let remoteItems = try await RSSParser().parseFeed(url: source.url,
+                                                                      sourceName: source.name)
+                    
+                    //let newArray = Array(remoteItems[0..<3])
+                    let updatedWithRead = self.services.databaseService.updateWithRead(remoteItems)
+                    let databaseService = self.services.databaseService
+                    databaseService.saveNewsItems(updatedWithRead)
+                    let items = databaseService.fetchNewsItems()
+                    items.forEach({ print("Fetched db: \($0.isRead)")})
+                    
                     let vmItems = items.map {
                         return NewsItemViewModel(newsItem: $0,
                                                  placeholderImage: placeholderImage,
@@ -74,15 +84,15 @@ extension NewsListViewModel: ViewModelProtocol, ViewModelControllerProtocol {
     
     private func getEnabledSources() -> [NewsSource] {
         let allSources = [
-            //                            NewsSource(name: "Ведомости",
-            //                                                      url: "https://www.vedomosti.ru/info/rss",
-            //                                                      isEnabled: true),
-            //            NewsSource(name: "Лента.ру",
-            //                       url: "http://lenta.ru/rss",
-            //                       isEnabled: true),
-            NewsSource(name: "RBC",
-                       url:"http://static.feed.rbc.ru/rbc/internal/rss.rbc.ru/rbc.ru/news.rss",
-                       isEnabled: true)
+//            NewsSource(name: "Ведомости",
+//                       url: "https://www.vedomosti.ru/rss/articles",
+//                       isEnabled: true),
+            //                        NewsSource(name: "Лента.ру",
+            //                                   url: "http://lenta.ru/rss",
+            //                                   isEnabled: true),
+                        NewsSource(name: "RBC",
+                                   url:"http://static.feed.rbc.ru/rbc/internal/rss.rbc.ru/rbc.ru/news.rss",
+                                   isEnabled: true)
         ]
         
         return allSources

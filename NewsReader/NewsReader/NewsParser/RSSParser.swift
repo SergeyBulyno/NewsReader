@@ -7,7 +7,7 @@
 
 import Foundation
 
-class RSSParser: NSObject {
+final class RSSParser: NSObject {
     private var currentElement = ""
     private var currentItem: NewsItem?
     private var currentPubDate: String = ""
@@ -36,7 +36,6 @@ class RSSParser: NSObject {
         
         return try await withCheckedThrowingContinuation { continuation in
             parserContinuation = continuation
-           
             let parser = XMLParser(data: data)
             parser.delegate = self
             parser.parse()
@@ -52,7 +51,6 @@ extension RSSParser: XMLParserDelegate {
     
     func parserDidEndDocument(_ parser: XMLParser) {
         //delegate?.didParseItems(items)
-        
         parserContinuation?.resume(returning: items)
     }
     
@@ -72,6 +70,8 @@ extension RSSParser: XMLParserDelegate {
             currentItem?.newsDescription += string
         case "pubDate":
             currentPubDate += string
+        case "guid":
+            currentItem?.guid += string
         case "enclosure":
             // Handle in `didStartElement`
             break

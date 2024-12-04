@@ -7,7 +7,7 @@
 import UIKit
 import Foundation
 
-class ImageCacheService {
+final class ImageCacheService {
     private let cache = NSCache<NSString, UIImage>()
 
     init() {}
