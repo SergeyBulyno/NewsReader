@@ -66,7 +66,7 @@ extension NewsListViewModel: ViewModelProtocol, ViewModelControllerProtocol {
     //MARK: - Fetch data
     func fetchData() {
         let sources = self.getEnabledSources()
-        isLoading = sources.count > 0
+        isLoading = sources.count > 0 && newsItems.count == 0
         for source in sources {
             Task { @MainActor in
                 do {
