@@ -27,16 +27,25 @@ class RootFlowCoordinator: FlowCoordinatorProtocol {
         let newsServices = NewsListServices(parser: RSSParser(),
                                             imageCacheService: ImageCacheService(),
                                             localizationProvider: LocalizationProvider())
-        let viewModel = NewsListViewModel(newsServices: newsServices)
+        let viewModel = NewsListViewModel(services: newsServices)
+        viewModel.selectItemClosure = { [weak self] newsItem in
+            guard let self else { return }
+            self.showNewsDetailsViewController(services: newsServices,
+                                               newsItemVM: newsItem)
+        }
         newsViewController = NewsListViewController(viewModel)
         navigationController.pushViewController(newsViewController!, animated: true)
     }
     
     private func showSettingsViewController() {
-        
+       
     }
     
-    private func showNewsDetailsViewController() {
-        
+    private func showNewsDetailsViewController(services: NewsListServices,
+                                               newsItemVM: NewsItemViewModel) {
+        let viewModel = NewsDetailsViewModel(services: services,
+                                             newsItem: newsItemVM)
+        let viewController = NewsDetailsViewController(viewModel)
+        navigationController.pushViewController(viewController, animated: true)
     }
 }

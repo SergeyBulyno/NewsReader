@@ -14,5 +14,8 @@ protocol ViewModelProtocol {
     
     var isLoadingClosure: ResultClosure? { get set }
     var reloadDataClosure: (([itemVM]) -> Void)? { get set }
+}
+
+protocol ViewModelControllerProtocol {
     var title: String {get}
 }

@@ -23,15 +23,22 @@ class NewsListViewModel {
     private let services: NewsListServices
     
     private let placeholderImage: UIImage
-    init(newsServices: NewsListServices) {
-        services = newsServices
-        placeholderImage = UIImage(named:"placeholder")!
+    init(services: NewsListServices) {
+        self.services = services
+        self.placeholderImage = UIImage(named:"placeholder")!
+    }
+    
+    var selectItemClosure:((NewsItemViewModel) ->Void)?
+    
+    func selectItem(at indexPath: IndexPath) {
+        guard indexPath.row < newsItems.count else { return }
+        self.selectItemClosure?(newsItems[indexPath.row])
     }
 }
 
-extension NewsListViewModel: ViewModelProtocol {
+extension NewsListViewModel: ViewModelProtocol, ViewModelControllerProtocol {
     var title: String {
-        return self.services.localizationProvider.string(forKey: "news_title", placeholder: "Новости")
+        return self.services.localizationProvider.string(forKey: "news_list_title", placeholder: "Новости")
     }
     
     typealias itemVM = NewsItemViewModel
@@ -45,7 +52,11 @@ extension NewsListViewModel: ViewModelProtocol {
                 do {
                     let items = try await RSSParser().parseFeed(url: source.url,
                                                                 sourceName: source.name)
-                    let vmItems = items.map { NewsItemViewModel(newsItem: $0, placeholderImage: placeholderImage, imageCacheService: services.imageCacheService) }
+                    let vmItems = items.map {
+                        return NewsItemViewModel(newsItem: $0,
+                                                 placeholderImage: placeholderImage,
+                                                 imageCacheService: services.imageCacheService)
+                    }
                     self.showData(items: vmItems)
                 } catch let error {
                     print((error as? RSSError)?.localizedDescription ?? "")

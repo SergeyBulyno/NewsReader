@@ -32,6 +32,10 @@ class NewsItemViewModel {
     var sourceName: String {
         return newsItem.sourceName
     }
+    
+    var link: String {
+        return newsItem.link
+    }
 
     var imageUrl: String {
         return newsItem.imageUrl

@@ -10,8 +10,8 @@ import UIKit
 class NewsListViewController: UIViewController {
     private(set) var viewModel: NewsListViewModel
     
-    init(_ newsViewModel: NewsListViewModel) {
-        viewModel = newsViewModel
+    init(_ viewModel: NewsListViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -162,11 +162,8 @@ class NewsListViewController: UIViewController {
 
 extension NewsListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        selectItemAt(indexPath)
+        self.viewModel.selectItem(at: indexPath)
         collectionView.deselectItem(at: indexPath, animated: false)
-    }
-    
-    func selectItemAt(_ indexPath: IndexPath) {
     }
 }
 
