@@ -71,8 +71,6 @@ class DatabaseService {
     
 }
 
-
-
 extension Results {
     func toArray() -> [Element] {
         .init(self)

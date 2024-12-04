@@ -19,14 +19,21 @@ final class NewsListViewModel {
             self.isLoadingClosure?(isLoading)
         }
     }
-    
+    private var timer: Timer?
     private(set) var newsItems: [NewsItemViewModel] = []
     private let services: NewsListServices
     
     private let placeholderImage: UIImage
+    
     init(services: NewsListServices) {
         self.services = services
         self.placeholderImage = UIImage(named:"placeholder")!
+        startTimer()
+    }
+    
+    deinit {
+        print("[%@] deinit", Self.self)
+        stopTimer()
     }
     
     var selectItemClosure:((NewsItemViewModel) ->Void)?
@@ -34,6 +41,18 @@ final class NewsListViewModel {
     func selectItem(at indexPath: IndexPath) {
         guard indexPath.row < newsItems.count else { return }
         self.selectItemClosure?(newsItems[indexPath.row])
+    }
+    
+    //MARK: - Timer functionality
+    private func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: services.settings.refreshInterval, repeats: true, block: { [weak self] _ in
+            self?.fetchData()
+        })
+    }
+    
+    private func stopTimer() {
+        self.timer?.invalidate()
+        self.timer = nil
     }
 }
 
@@ -84,15 +103,15 @@ extension NewsListViewModel: ViewModelProtocol, ViewModelControllerProtocol {
     
     private func getEnabledSources() -> [NewsSource] {
         let allSources = [
-//            NewsSource(name: "Ведомости",
-//                       url: "https://www.vedomosti.ru/rss/articles",
-//                       isEnabled: true),
+            //            NewsSource(name: "Ведомости",
+            //                       url: "https://www.vedomosti.ru/rss/articles",
+            //                       isEnabled: true),
             //                        NewsSource(name: "Лента.ру",
             //                                   url: "http://lenta.ru/rss",
             //                                   isEnabled: true),
-                        NewsSource(name: "RBC",
-                                   url:"http://static.feed.rbc.ru/rbc/internal/rss.rbc.ru/rbc.ru/news.rss",
-                                   isEnabled: true)
+            NewsSource(name: "RBC",
+                       url:"http://static.feed.rbc.ru/rbc/internal/rss.rbc.ru/rbc.ru/news.rss",
+                       isEnabled: true)
         ]
         
         return allSources

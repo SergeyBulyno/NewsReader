@@ -24,7 +24,8 @@ class RootFlowCoordinator: FlowCoordinatorProtocol {
     
     private var newsViewController: NewsListViewController?
     private func showNewsViewController() {
-        let newsServices = NewsListServices(parser: RSSParser(),
+        let newsServices = NewsListServices(settings: AppSettings(),
+                                            parser: RSSParser(),
                                             imageCacheService: ImageCacheService(),
                                             databaseService: NewsDatabaseService(),
                                             localizationProvider: LocalizationProvider())

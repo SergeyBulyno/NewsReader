@@ -6,6 +6,7 @@
 //
 
 struct NewsListServices {
+    let settings: AppSettings
     let parser: RSSParser
     let imageCacheService: ImageCacheService
     let databaseService: NewsDatabaseService
