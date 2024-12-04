@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class NewsListViewModel {
     var isLoadingClosure: ResultClosure?
@@ -21,8 +22,10 @@ class NewsListViewModel {
     private(set) var newsItems: [NewsItemViewModel] = []
     private let services: NewsListServices
     
+    private let placeholderImage: UIImage
     init(newsServices: NewsListServices) {
         services = newsServices
+        placeholderImage = UIImage(named:"placeholder")!
     }
 }
 
@@ -42,7 +45,7 @@ extension NewsListViewModel: ViewModelProtocol {
                 do {
                     let items = try await RSSParser().parseFeed(url: source.url,
                                                                 sourceName: source.name)
-                    let vmItems = items.map { NewsItemViewModel(newsItem: $0) }
+                    let vmItems = items.map { NewsItemViewModel(newsItem: $0, placeholderImage: placeholderImage, imageCacheService: services.imageCacheService) }
                     DispatchQueue.main.async { [weak self] in
                         self?.showData(items: vmItems)
                     }

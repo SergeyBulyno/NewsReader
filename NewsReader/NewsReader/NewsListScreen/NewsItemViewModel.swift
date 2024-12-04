@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 class NewsItemViewModel {
     var id: UUID {
@@ -46,15 +47,27 @@ class NewsItemViewModel {
         }
     }
     
-    var sourceIsAvailable: Bool = true
+    var sourceAvailable: Bool = true
+    var imageAvailable: Bool {
+        return !imageUrl.isEmpty
+    }
     
+    private(set) var placeholderImage: UIImage?
     var updateLayoutClosure: VoidClosure?
-    
-    init(newsItem: NewsItem, isExtpandedMode: Bool = false) {
+    private let imageCacheService: ImageCacheService
+    init(newsItem: NewsItem,
+         isExtpandedMode: Bool = false,
+         placeholderImage: UIImage,
+         imageCacheService: ImageCacheService) {
         self.newsItem = newsItem
         self.isExpanded = isExtpandedMode
+        self.placeholderImage = placeholderImage
+        self.imageCacheService = imageCacheService
     }
-
+    
+    func fetchImage() async throws -> UIImage {
+        return try await self.imageCacheService.loadCachedImage(from: imageUrl)
+    }
 }
 
 extension NewsItemViewModel: Hashable {

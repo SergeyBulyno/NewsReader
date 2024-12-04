@@ -32,6 +32,8 @@ class NewsListCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         loadingImageView.image = nil
+        loadingImageView.isHidden = true
+        fetchTask?.cancel()
     }
     
     private var closedConstraint: NSLayoutConstraint?
@@ -195,14 +197,27 @@ class NewsListCollectionViewCell: UICollectionViewCell {
         titleLabel.text = viewModel.title
         newsReadView.isHidden = viewModel.isRead
         pubDateLabel.text = viewModel.pubDate
-        sourceLabel.isHidden = !viewModel.sourceIsAvailable
-        if viewModel.sourceIsAvailable {
+        sourceLabel.isHidden = !viewModel.sourceAvailable
+        if viewModel.sourceAvailable {
             sourceLabel.text = viewModel.sourceName
         }
-        
-        //showImage(viewModel)
+        loadImageView(loadingImageView, from: viewModel)
         updateExpandable(viewModel.isExpanded)
         subtitleLabel.text = viewModel.description
+    }
+    private var fetchTask: Task<(), Never>?
+    
+    func loadImageView(_ imageView: UIImageView, from viewModel: NewsItemViewModel) {
+        guard viewModel.imageAvailable else { return }
+        imageView.isHidden = false
+        imageView.image = viewModel.placeholderImage
+        fetchTask = Task { @MainActor in
+            if let fetchTask = self.fetchTask, !fetchTask.isCancelled {
+                if let image = try? await viewModel.fetchImage() {
+                    imageView.image = image
+                }
+            }
+        }
     }
     
     private func updateExpandable(_ isExpand: Bool) {

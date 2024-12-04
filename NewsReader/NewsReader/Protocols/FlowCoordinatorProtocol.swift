@@ -11,5 +11,4 @@ protocol FlowCoordinatorProtocol {
     var navigationController: UINavigationController { get set}
     func start()
     func stop()
-    //associatedtype T
 }

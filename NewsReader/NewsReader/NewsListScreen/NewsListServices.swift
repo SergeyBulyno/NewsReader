@@ -7,5 +7,6 @@
 
 struct NewsListServices {
     let parser: RSSParser
+    let imageCacheService: ImageCacheService
     let localizationProvider: LocalizationProvider
 }
