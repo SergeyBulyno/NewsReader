@@ -49,14 +49,14 @@ class NewsListCollectionViewCell: UICollectionViewCell {
     private let pubDateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 10)
-        label.textColor = UIColor.darkGray
+        label.textColor = .darkGray
         return label
     }()
     
     private var sourceLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = UIColor.systemGray
+        label.textColor = .systemGray
         label.textAlignment = .right
         return label
     }()
@@ -71,7 +71,7 @@ class NewsListCollectionViewCell: UICollectionViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = UIColor.black
+        label.textColor = .black
         label.numberOfLines = 2
         return label
     }()
@@ -98,7 +98,7 @@ class NewsListCollectionViewCell: UICollectionViewCell {
     var subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = UIColor.systemGray
+        label.textColor = .systemGray
         label.numberOfLines = 4
         return label
     }()

@@ -57,7 +57,7 @@ class NewsItemViewModel {
     }
     
     private(set) var placeholderImage: UIImage?
-    //TODO: Replace with observing
+
     var updateLayoutClosure: VoidClosure?
     var markAsReadClosure: VoidClosure?
     private let imageCacheService: ImageCacheService
@@ -72,6 +72,7 @@ class NewsItemViewModel {
     }
     
     func fetchImage(urlString: String) async throws -> UIImage {
+    
         return try await self.imageCacheService.loadCachedImage(from: urlString)
     }
 }

@@ -78,7 +78,7 @@ final class NewsListViewController: UIViewController {
     @objc private func openSetting() {
         viewModel.openSettingsClosure?()
     }
-    
+
     private func setupSubviews() {
         setupCollectionView()
     }

@@ -22,11 +22,14 @@ final class NewsListViewModel {
     private var timer: Timer?
     private(set) var newsItems: [NewsItemViewModel] = []
     private let services: NewsListServices
+    private let newsSources: [NewsSource]
     
     private let placeholderImage: UIImage
     
-    init(services: NewsListServices) {
+    init(services: NewsListServices,
+         newsSources: [NewsSource]) {
         self.services = services
+        self.newsSources = newsSources
         self.placeholderImage = UIImage(named:"placeholder")!
         startTimer()
     }
@@ -80,6 +83,7 @@ extension NewsListViewModel: ViewModelProtocol, ViewModelControllerProtocol {
                     let databaseService = self.services.databaseService
                     databaseService.saveNewsItems(updatedWithRead)
                     let items = databaseService.fetchNewsItems()
+                    filterItems(items)
                     let vmItems = items.map {
                         return NewsItemViewModel(newsItem: $0,
                                                  placeholderImage: placeholderImage,
@@ -101,18 +105,20 @@ extension NewsListViewModel: ViewModelProtocol, ViewModelControllerProtocol {
     }
     
     private func getEnabledSources() -> [NewsSource] {
-        let allSources = [
-            //            NewsSource(name: "Ведомости",
-            //                       url: "https://www.vedomosti.ru/rss/articles",
-            //                       isEnabled: true),
-            //                        NewsSource(name: "Лента.ру",
-            //                                   url: "http://lenta.ru/rss",
-            //                                   isEnabled: true),
-            NewsSource(name: "RBC",
-                       url:"http://static.feed.rbc.ru/rbc/internal/rss.rbc.ru/rbc.ru/news.rss",
-                       isEnabled: true)
-        ]
-        
-        return allSources
+        return newsSources
+    }
+    
+    private func filterItems(_ items: [NewsItem]) {
+        items.forEach { item in
+            let found = items.first{
+                if item === $0 {
+                    return false
+                }
+                return $0.id == item.id
+            }
+            if found != nil {
+                print("!!!!!id\(item) - \(found!)")
+            }
+        }
     }
 }

@@ -18,8 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func changeAppearance() {
-        UINavigationBar.appearance().barTintColor = .darkGray
-        UINavigationBar.appearance().tintColor = .darkGray
         UIBarButtonItem.appearance().tintColor = .gray
     }
 

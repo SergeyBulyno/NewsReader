@@ -4,19 +4,23 @@ PODS:
   - Realm/Headers (20.0.0)
   - RealmSwift (20.0.0):
     - Realm (= 20.0.0)
+  - StepSlider (1.8.0)
 
 DEPENDENCIES:
   - RealmSwift
+  - StepSlider
 
 SPEC REPOS:
   trunk:
     - Realm
     - RealmSwift
+    - StepSlider
 
 SPEC CHECKSUMS:
   Realm: a799b5f9145623fb0bfe149fe81422863631dd0f
   RealmSwift: f8c4354ebd5053343e6ab9f4eda244145308a51e
+  StepSlider: 890db727e779fa99cb32afffc5887c1109e151f4
 
-PODFILE CHECKSUM: d1a11bc2036a92e2941276dc64ca788260a50942
+PODFILE CHECKSUM: 693a1e6dc1ee9700ad54889105f0889853f57ed0
 
 COCOAPODS: 1.16.2

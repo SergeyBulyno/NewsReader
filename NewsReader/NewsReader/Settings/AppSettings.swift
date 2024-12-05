@@ -28,11 +28,24 @@ class AppSettings {
             UserDefaults.standard.set(newValue, forKey: enabledSourcesKey)
         }
     }
+    
+    func updateSources(_ sources: [String: Bool]) {
+        let storedSources = enabledSources
+        guard storedSources.count != 0 else {
+            enabledSources = sources
+            return
+        }
+        
+        let items = sources.filter { item in
+            let item = storedSources.first { $0.key == item.key }
+            return item == nil
+        }
+        enabledSources += items
+    }
 
     init() {
         if UserDefaults.standard.object(forKey: refreshIntervalKey) == nil {
-            //refreshInterval = 1800 // 30 минут
-            refreshInterval = 10
+            refreshInterval = 1800 // 30 минут
         }
     }
 }
