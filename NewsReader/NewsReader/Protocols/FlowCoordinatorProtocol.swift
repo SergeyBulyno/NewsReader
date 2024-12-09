@@ -8,7 +8,8 @@
 import UIKit
 
 protocol FlowCoordinatorProtocol {
-    var navigationController: UINavigationController { get set}
+    var navigator: NavigatorProtocol { get }
+    var stopClosure: VoidClosure? { get set }
     func start()
     func stop()
 }

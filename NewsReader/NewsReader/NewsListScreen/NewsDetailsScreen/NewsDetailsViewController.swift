@@ -8,7 +8,7 @@
 import Foundation
 import WebKit
 
-class NewsDetailsViewController: UIViewController {
+final class NewsDetailsViewController: UIViewController {
     
     private(set) var viewModel: NewsDetailsViewModel
     private weak var webView: WKWebView!
@@ -23,7 +23,7 @@ class NewsDetailsViewController: UIViewController {
     }
     
     deinit {
-        print("[%@] deinit", Self.self)
+        print(Self.self, " deinit")
     }
     
     override func viewDidLoad() {

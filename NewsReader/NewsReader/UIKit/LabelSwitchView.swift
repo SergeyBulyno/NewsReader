@@ -36,7 +36,7 @@ class LabelSwitchView: UIView {
     }
     
     deinit {
-        print("[%@] deinit", Self.self)
+        print(Self.self, " deinit")
     }
     
     private func setupSubviews() {

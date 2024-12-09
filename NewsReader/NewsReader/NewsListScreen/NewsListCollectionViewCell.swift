@@ -26,7 +26,7 @@ class NewsListCollectionViewCell: UICollectionViewCell {
     }
     
     deinit {
-        print("[%@] deinit", Self.self)
+        print(Self.self, " deinit")
     }
     
     override func prepareForReuse() {

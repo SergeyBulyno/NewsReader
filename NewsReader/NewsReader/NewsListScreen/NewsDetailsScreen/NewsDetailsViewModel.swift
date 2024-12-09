@@ -5,7 +5,7 @@
 //  Created by Sergey Bulyno on 12/4/24.
 //
 
-class NewsDetailsViewModel {
+final class NewsDetailsViewModel {
     var urlString: String {
         return newsItem.link
     }
@@ -16,6 +16,10 @@ class NewsDetailsViewModel {
          newsItem: NewsItemViewModel) {
         self.services = services
         self.newsItem = newsItem
+    }
+    
+    deinit {
+        print(Self.self, " deinit")
     }
 }
 
