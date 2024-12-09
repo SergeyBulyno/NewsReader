@@ -7,7 +7,9 @@
 
 import UIKit
 
-final class NewsListViewController: UIViewController {
+final class NewsListViewController: UIViewController, ViewControllerProtocol {
+    var closeVCClosure: VoidClosure?
+    
     private(set) var viewModel: NewsListViewModel
     
     init(_ viewModel: NewsListViewModel) {
@@ -23,6 +25,13 @@ final class NewsListViewController: UIViewController {
         super.viewDidLoad()
         setupController()
         viewModel.fetchData()
+    }
+    
+    override func didMove(toParent parent: UIViewController?) {
+        super.didMove(toParent: parent)
+        if parent == nil {
+            closeVCClosure?()
+        }
     }
     
     //MARK: Loading indicator
@@ -55,14 +64,13 @@ final class NewsListViewController: UIViewController {
     private var collectionView: UICollectionView?
     private var dataSource: UICollectionViewDiffableDataSource<Section, NewsItemViewModel>?
     
-    private func setupController() {
+    func setupController() {
         view.backgroundColor = .white
         self.title = self.viewModel.title
         setupButtons()
         setupSubviews()
         setupConstraints()
         setupObservers()
-        
     }
     
     private func setupButtons() {
@@ -135,7 +143,11 @@ final class NewsListViewController: UIViewController {
         }
         collectionView?.dataSource = dataSource
         
-        //updateSnapshot(animated: false)
+        var snapshot = NSDiffableDataSourceSnapshot<Section, NewsItemViewModel>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(viewModel.newsItems)
+        dataSource?.apply(snapshot)
+        
     }
     
     //MARK: - Layout Subviews
@@ -159,22 +171,20 @@ final class NewsListViewController: UIViewController {
         }
     }
     
-    private func reloadData() {
-        updateSnapshot(animated: false)
-    }
-    
     private func updateSnapshot(animated: Bool) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, NewsItemViewModel>()
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModel.newsItems)
         dataSource?.apply(snapshot)
     }
+    
 }
 
-//var snapshot = recipeListDataSource.snapshot()
-//    // Update the recipe's data displayed in the collection view.
-//    snapshot.reconfigureItems([recipeId])
-//    recipeListDataSource.apply(snapshot, animatingDifferences: true).
+extension NewsListViewController: ViewControllerReloadableProtocol {
+    func reloadData() {
+        updateSnapshot(animated: true)
+    }
+}
 
 extension NewsListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

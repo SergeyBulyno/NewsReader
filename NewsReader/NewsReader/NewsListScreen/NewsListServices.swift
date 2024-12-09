@@ -7,7 +7,7 @@
 
 struct NewsListServices {
     let settings: AppSettings
-    let parser: RSSParser
+    let parser: NewsParser
     let imageCacheService: ImageCacheService
     let databaseService: NewsDatabaseService
     let localizationProvider: LocalizationProvider

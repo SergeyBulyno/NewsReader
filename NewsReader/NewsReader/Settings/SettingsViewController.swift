@@ -10,16 +10,14 @@ import StepSlider
 final class SettingsViewController: UIViewController {
     
     private(set) var viewModel: SettingsViewModel
-    
+    var closeVCClosure: VoidClosure?
     private let scrollView = {
         let scrollView = UIScrollView()
         scrollView.contentInset = .zero
-        //scrollView.keyboardDismissMode = .interactive
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.alwaysBounceHorizontal = false
         scrollView.alwaysBounceVertical = false
-    
         return scrollView
     }()
     
@@ -32,8 +30,6 @@ final class SettingsViewController: UIViewController {
     }()
     
     private let intervalSlider = StepSlider()
-        
-    private let showSourceLabel = LabelSwitchView()
     private let articleSourcesLabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 20)
@@ -57,7 +53,7 @@ final class SettingsViewController: UIViewController {
     }
     
     deinit {
-        print("[%@] deinit", Self.self)
+        print(Self.self, " deinit")
     }
     
     override func viewDidLoad() {
@@ -71,8 +67,8 @@ final class SettingsViewController: UIViewController {
     override func didMove(toParent parent: UIViewController?) {
         super.didMove(toParent: parent)
         if parent == nil {
-            print(intervalSlider.index)
             viewModel.saveSettings()
+            closeVCClosure?()
         }
     }
     
@@ -83,8 +79,6 @@ final class SettingsViewController: UIViewController {
         contentView.addSubview(intervalLabel)
         intervalLabel.text = viewModel.intervalLabelText
         setupIntervalSlider()
-        contentView.addSubview(showSourceLabel)
-        showSourceLabel.label.text = viewModel.articleSourceAvailabelLabelText
         
         contentView.addSubview(articleSourcesLabel)
         articleSourcesLabel.text = viewModel.articleSourcesLabelText
@@ -126,7 +120,6 @@ final class SettingsViewController: UIViewController {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         intervalLabel.translatesAutoresizingMaskIntoConstraints = false
         intervalSlider.translatesAutoresizingMaskIntoConstraints = false
-        showSourceLabel.translatesAutoresizingMaskIntoConstraints = false
         articleSourcesLabel.translatesAutoresizingMaskIntoConstraints = false
         
         let contentTopConstraint = contentView.topAnchor.constraint(equalTo: scrollView.topAnchor)
@@ -148,15 +141,11 @@ final class SettingsViewController: UIViewController {
             intervalLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             
             intervalSlider.topAnchor.constraint(equalTo: intervalLabel.bottomAnchor, constant: vSpace),
-            intervalSlider.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            intervalSlider.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: hSpace),
             intervalSlider.heightAnchor.constraint(equalToConstant: 70),
-            intervalSlider.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            intervalSlider.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -hSpace),
             
-            showSourceLabel.topAnchor.constraint(equalTo: intervalSlider.bottomAnchor, constant: vSpace*2),
-            showSourceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            showSourceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            
-            articleSourcesLabel.topAnchor.constraint(equalTo: showSourceLabel.bottomAnchor, constant: vSpace*2),
+            articleSourcesLabel.topAnchor.constraint(equalTo: intervalSlider.bottomAnchor, constant: vSpace*2),
             articleSourcesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             articleSourcesLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
         ])

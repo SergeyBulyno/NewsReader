@@ -1,5 +1,5 @@
 //
-//  RSSParser.swift
+//  NewsRSSParser.swift
 //  NewsReader
 //
 //  Created by Sergey Bulyno on 12/2/24.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class RSSParser: NSObject {
+final class NewsRSSParser: NSObject {
     private var currentElement = ""
     private var currentItem: NewsItem?
     private var currentPubDate: String = ""
@@ -31,20 +31,20 @@ final class RSSParser: NSObject {
             throw RSSError.invalidResponseCode(httpResponse.statusCode)
         }
         
-//        let str = String(decoding: data, as: UTF8.self)
-//        print(str)
+        //                let str = String(decoding: data, as: UTF8.self)
+        //                print(str)
         
         return try await withCheckedThrowingContinuation { continuation in
-            parserContinuation = continuation
+            self.parserContinuation = continuation
             let parser = XMLParser(data: data)
             parser.delegate = self
             parser.parse()
         }
-        
     }
 }
 
-extension RSSParser: XMLParserDelegate {
+extension NewsRSSParser: XMLParserDelegate {
+    
     func parserDidStartDocument(_ parser: XMLParser) {
         items = []
     }
@@ -57,7 +57,6 @@ extension RSSParser: XMLParserDelegate {
     func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
         print("Error: \(parseError)")
         parserContinuation?.resume(throwing: RSSError.invalidRSS(String(describing: parseError)))
-       // delegate?.didFailWithError(parseError)
     }
     
     func parser(_ parser: XMLParser, foundCharacters string: String) {
@@ -95,6 +94,10 @@ extension RSSParser: XMLParserDelegate {
         }
         
         if elementName == "enclosure", let urlString = attributeDict["url"] {
+            currentItem?.imageUrl = urlString
+        }
+        
+        if elementName == "media:thumbnail", let urlString = attributeDict["url"] {
             currentItem?.imageUrl = urlString
         }
     }

@@ -35,7 +35,7 @@ final class NewsListViewModel {
     }
     
     deinit {
-        print("[%@] deinit", Self.self)
+        print(Self.self, " deinit")
         stopTimer()
     }
     
@@ -58,9 +58,14 @@ final class NewsListViewModel {
         self.timer?.invalidate()
         self.timer = nil
     }
+    
+    func updateSettings() {
+        
+    }
+    
 }
 
-extension NewsListViewModel: ViewModelProtocol, ViewModelControllerProtocol {
+extension NewsListViewModel: ViewModelLoadableProtocol, ViewModelControllerProtocol {
     var title: String {
         return self.services.localizationProvider.string(forKey: "news_list_title", placeholder: "Новости")
     }
@@ -71,30 +76,27 @@ extension NewsListViewModel: ViewModelProtocol, ViewModelControllerProtocol {
     func fetchData() {
         let sources = self.getEnabledSources()
         isLoading = sources.count > 0 && newsItems.count == 0
-        for source in sources {
-            Task { @MainActor in
-                do {
-                    //TODO: Move to separated service
-                    let remoteItems = try await RSSParser().parseFeed(url: source.url,
-                                                                      sourceName: source.name)
-                    
-                    //let newArray = Array(remoteItems[0..<3])
-                    let updatedWithRead = self.services.databaseService.updateWithRead(remoteItems)
-                    let databaseService = self.services.databaseService
-                    databaseService.saveNewsItems(updatedWithRead)
-                    let items = databaseService.fetchNewsItems()
-                    filterItems(items)
-                    let vmItems = items.map {
-                        return NewsItemViewModel(newsItem: $0,
-                                                 placeholderImage: placeholderImage,
-                                                 imageCacheService: services.imageCacheService)
-                    }
-                    self.showData(items: vmItems)
-                } catch let error {
-                    print((error as? RSSError)?.localizedDescription ?? "")
+        
+        Task { @MainActor in
+            do {
+                
+                let remoteItems = try await self.services.parser.fetchAndParseFeed(urlSourcePairs: sources.map{ ($0.url, $0.name) })
+                let databaseService = self.services.databaseService
+                let updatedWithRead = databaseService.updateWithRead(remoteItems)
+                databaseService.saveNewsItems(updatedWithRead)
+                
+                let items = databaseService.fetchNewsItems(sourceNames: sources.map{ $0.name })
+                filterItems(items)
+                let vmItems = items.map {
+                    return NewsItemViewModel(newsItem: $0,
+                                             placeholderImage: placeholderImage,
+                                             imageCacheService: services.imageCacheService)
                 }
-                self.isLoading = false
+                self.showData(items: vmItems)
+            } catch let error {
+                print((error as? RSSError)?.localizedDescription ?? "")
             }
+            self.isLoading = false
         }
     }
     
@@ -105,7 +107,10 @@ extension NewsListViewModel: ViewModelProtocol, ViewModelControllerProtocol {
     }
     
     private func getEnabledSources() -> [NewsSource] {
-        return newsSources
+        let enabledSources = services.settings.enabledSources
+        return newsSources.filter{source in
+            return enabledSources[source.name] ?? source.isEnabled
+        }
     }
     
     private func filterItems(_ items: [NewsItem]) {

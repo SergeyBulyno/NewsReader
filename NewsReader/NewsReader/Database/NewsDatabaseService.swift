@@ -17,13 +17,19 @@ class NewsDatabaseService {
         try? db.saveOrUpdateAllObjects(objects: items)
     }
     
-    func fetchNewsItems() -> [NewsItem] {
-        guard let sortedItems = fetchNewsItemSorted() else { return []}
-        return sortedItems.toArray()
+    func fetchNewsItems(sourceNames: [String]?) -> [NewsItem] {
+        return fetchNewsItemSortedByDate(sourceNames: sourceNames) ?? []
     }
     
-    func fetchNewsItemSorted() -> Results<NewsItem>? {
-        return db.fetchResults(by: NewsItem.self)?.sorted(byKeyPath: "pubDate", ascending: false)
+    func fetchNewsItemSortedByDate(sourceNames: [String]?) -> [NewsItem]? {
+        guard let sourceNames = sourceNames, sourceNames.count > 0 else {
+            return []
+        }
+        return db.fetchResults(by: NewsItem.self)?.filter({ item in
+            return sourceNames.contains{ $0 == item.sourceName}
+        }).sorted(by: { item1, item2 in
+            return item1.pubDate > item2.pubDate
+        })
     }
     
     func fetchAllNews() -> [NewsItem] {

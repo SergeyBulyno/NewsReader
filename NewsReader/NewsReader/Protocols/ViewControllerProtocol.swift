@@ -6,5 +6,9 @@
 //
 
 protocol ViewControllerProtocol {
-    
+    var closeVCClosure: VoidClosure? { get set }
+}
+
+protocol ViewControllerReloadableProtocol {
+    func reloadData()
 }

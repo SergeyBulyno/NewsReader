@@ -8,7 +8,7 @@
 typealias VoidClosure = () -> Void
 typealias ResultClosure = (Bool) -> Void
 
-protocol ViewModelProtocol {
+protocol ViewModelLoadableProtocol {
     associatedtype itemVM
     func fetchData()
     

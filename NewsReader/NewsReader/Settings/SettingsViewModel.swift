@@ -25,30 +25,30 @@ final class SettingsViewModel {
     private var newsSources: [NewsSource]
     
     var sourcesValues: [String: Bool]!
-    var itervalIndex: UInt!
-    
     var sourcesOrder: [String] {
         return sourcesValues.keys.sorted()
     }
     
-    let intervalPairs = [(1800, "30мин"),
-                         (3600, "1час"),
-                         (7200, "2часа"),
-                         (10800, "3часа"),
-                         (21600, "6часов"),
-                         (86400, "день")]
-   
+    var itervalIndex: UInt!
+    private let intervalPairs = [(1800, "30мин"),
+                                 (3600, "1час"),
+                                 (7200, "2часа"),
+                                 (10800, "3часа"),
+                                 (21600, "6часов"),
+                                 (86400, "день")]
+    
     
     var intervalsLabelsText: [String] {
         return intervalPairs.map{ $0.1 }
     }
-
+    
     private func setupInitValues() {
-        self.sourcesValues = services.settings.enabledSources.filter { item in
+        let settings = services.settings
+        self.sourcesValues = settings.enabledSources.filter { item in
             let name = newsSources.first{ $0.name == item.key }
             return name != nil
         }
-        self.itervalIndex = UInt(intervalPairs.map { TimeInterval($0.0) }.firstIndex(of: services.settings.refreshInterval) ?? 1)
+        self.itervalIndex = UInt(intervalPairs.map { TimeInterval($0.0) }.firstIndex(of: settings.refreshInterval) ?? 1)
     }
     
     func saveSettings() {
@@ -61,6 +61,10 @@ final class SettingsViewModel {
         self.services = services
         self.newsSources = newsSources
         setupInitValues()
+    }
+    
+    deinit {
+        print(Self.self, " deinit")
     }
 }
 
