@@ -31,7 +31,7 @@ class NewsDatabaseService {
     }
     
     func markAsRead(_ item: NewsItem) {
-        try? db.update(closure: {
+        try? db.update({
             item.isRead = true
         })
     }

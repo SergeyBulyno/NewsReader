@@ -20,24 +20,23 @@ class DatabaseService {
     
     func saveOrUpdateObject(object: Object) throws {
         guard let storage else { return }
-        try storage.write {
+        storage.writeAsync {
             storage.add(object, update: .modified)
         }
     }
     
     func saveOrUpdateAllObjects(objects: [Object]) throws {
         guard let storage else { return }
-        try storage.write {
+        storage.writeAsync {
             storage.add(objects, update: .modified)
         }
     }
     
-    func update(closure:(() -> ())) throws {
+    func update(_ closure:(() -> ())) throws {
         guard let storage else { return }
         try storage.write {
             closure()
         }
-        
     }
     
     func delete(object: Object) throws {
