@@ -81,7 +81,11 @@ class RootFlowCoordinator: FlowCoordinatorProtocol {
         let viewModel = SettingsViewModel(services: services,
                                           newsSources: newsSources)
         let viewController = SettingsViewController(viewModel)
-        viewController.closeVCClosure = updateClosure
+        viewController.closeVCClosure = {
+            if viewModel.valuesChanged {
+                updateClosure()
+            }
+        }
         viewController.clearCacheClosure = {
             services.clearCaches()
             clearCacheClosure()
