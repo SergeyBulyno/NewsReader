@@ -49,6 +49,7 @@ final class SettingsViewModel {
     var intervalsLabelsText: [String] {
         return intervalPairs.map{ $0.1 }
     }
+    var valuesChanged: Bool = false
     
     private func setupInitValues() {
         let settings = services.settings
@@ -60,8 +61,12 @@ final class SettingsViewModel {
     }
     
     func saveSettings() {
-        services.settings.enabledSources = sourcesValues
-        services.settings.refreshInterval = TimeInterval(intervalPairs[Int(itervalIndex)].0)
+        let newInterval = TimeInterval(intervalPairs[Int(itervalIndex)].0)
+        let settings = services.settings
+        valuesChanged = settings.enabledSources != sourcesValues || settings.refreshInterval != newInterval
+        
+        settings.enabledSources = sourcesValues
+        settings.refreshInterval = newInterval
     }
     
     init(services: NewsListServices,
