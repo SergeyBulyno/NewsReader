@@ -11,6 +11,8 @@ final class SettingsViewController: UIViewController {
     
     private(set) var viewModel: SettingsViewModel
     var closeVCClosure: VoidClosure?
+    var clearCacheClosure: VoidClosure?
+    
     private let scrollView = {
         let scrollView = UIScrollView()
         scrollView.contentInset = .zero
@@ -39,9 +41,17 @@ final class SettingsViewController: UIViewController {
     }()
     
     private var articleLabels: [LabelSwitchView]?
+    private var articleLabelsView: UIView = UIView()
+    
+    private var clearButton: UIButton = {
+        let button = UIButton(type: .custom)
+        return button
+    }()
     
     private let hSpace: CGFloat = 10
     private let vSpace: CGFloat = 6
+    private let sliderHeight: CGFloat = 70
+    private let clearButtonHeight: CGFloat = 50
     
     init(_ viewModel: SettingsViewModel) {
         self.viewModel = viewModel
@@ -83,10 +93,14 @@ final class SettingsViewController: UIViewController {
         contentView.addSubview(articleSourcesLabel)
         articleSourcesLabel.text = viewModel.articleSourcesLabelText
         setupSourceViews()
+        contentView.addSubview(clearButton)
+        clearButton.addTarget(self, action: #selector(tapClear) , for: .touchUpInside)
+        clearButton.setTitle(viewModel.clearButtonTitle, for: .normal)
+        clearButton.setTitleColor(.red, for: .normal)
     }
     
     private func setupIntervalSlider() {
-        intervalSlider.maxCount = 6
+        intervalSlider.maxCount = UInt(viewModel.intervalsLabelsText.count)
         intervalSlider.index = viewModel.itervalIndex
         intervalSlider.labels = viewModel.intervalsLabelsText
         intervalSlider.labelColor = .black
@@ -97,11 +111,16 @@ final class SettingsViewController: UIViewController {
         contentView.addSubview(intervalSlider)
     }
     
+    @objc private func tapClear(sender: UISlider, event: UIEvent) {
+        clearCacheClosure?()
+    }
+    
     @objc private func didChangeSliderValue(sender: UISlider, event: UIEvent) {
         viewModel.itervalIndex = intervalSlider.index
     }
     
     private func setupSourceViews() {
+        contentView.addSubview(articleLabelsView)
         self.articleLabels = viewModel.sourcesOrder.map { name in
             let view = LabelSwitchView()
             view.label.text = name
@@ -112,7 +131,7 @@ final class SettingsViewController: UIViewController {
             }
             return view
         }
-        articleLabels?.forEach{ contentView.addSubview($0) }
+        articleLabels?.forEach{ articleLabelsView.addSubview($0) }
     }
     
     private func setupConstraints() {
@@ -121,7 +140,8 @@ final class SettingsViewController: UIViewController {
         intervalLabel.translatesAutoresizingMaskIntoConstraints = false
         intervalSlider.translatesAutoresizingMaskIntoConstraints = false
         articleSourcesLabel.translatesAutoresizingMaskIntoConstraints = false
-        
+        clearButton.translatesAutoresizingMaskIntoConstraints = false
+        articleLabelsView.translatesAutoresizingMaskIntoConstraints = false
         let contentTopConstraint = contentView.topAnchor.constraint(equalTo: scrollView.topAnchor)
         contentTopConstraint.priority = .defaultLow
         let contentBottomConstraint = contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
@@ -142,30 +162,44 @@ final class SettingsViewController: UIViewController {
             
             intervalSlider.topAnchor.constraint(equalTo: intervalLabel.bottomAnchor, constant: vSpace),
             intervalSlider.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: hSpace),
-            intervalSlider.heightAnchor.constraint(equalToConstant: 70),
+            intervalSlider.heightAnchor.constraint(equalToConstant: sliderHeight),
             intervalSlider.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -hSpace),
             
             articleSourcesLabel.topAnchor.constraint(equalTo: intervalSlider.bottomAnchor, constant: vSpace*2),
             articleSourcesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             articleSourcesLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            articleLabelsView.topAnchor.constraint(equalTo: articleSourcesLabel.bottomAnchor, constant: vSpace),
+            articleLabelsView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            articleLabelsView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            clearButton.topAnchor.constraint(equalTo: articleLabelsView.bottomAnchor, constant: vSpace*2),
+            clearButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            clearButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            clearButton.heightAnchor.constraint(equalToConstant: clearButtonHeight),
+            clearButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -vSpace)
         ])
         
         setupSourcesConstraint()
     }
     
     private func setupSourcesConstraint() {
-        var topView: UIView = articleSourcesLabel
+        var topView: UIView? = nil
+        var topOffset: CGFloat = 0.0
         articleLabels?.forEach({ view in
             view.translatesAutoresizingMaskIntoConstraints = false
+            let topAnc = topView?.bottomAnchor ?? articleLabelsView.topAnchor
             NSLayoutConstraint.activate([
-                view.topAnchor.constraint(equalTo: topView.bottomAnchor, constant: vSpace),
+                view.topAnchor.constraint(equalTo: topAnc, constant: topOffset),
                 view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
                 view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             ])
             topView = view
+            topOffset = vSpace
         })
-        topView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -vSpace).isActive = true
+        topView?.bottomAnchor.constraint(equalTo: articleLabelsView.bottomAnchor).isActive = true
     }
+    
 }
 
 extension SettingsViewController: UIScrollViewDelegate {

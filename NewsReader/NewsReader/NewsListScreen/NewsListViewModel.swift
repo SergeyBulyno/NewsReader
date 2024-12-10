@@ -63,6 +63,10 @@ final class NewsListViewModel {
         
     }
     
+    func clearCache() {
+        showData(items: [])
+    }
+    
 }
 
 extension NewsListViewModel: ViewModelLoadableProtocol, ViewModelControllerProtocol {

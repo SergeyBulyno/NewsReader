@@ -11,15 +11,23 @@ final class SettingsViewModel {
     private let services: NewsListServices
     
     var intervalLabelText: String {
-        return self.services.localizationProvider.string(forKey: "news_settings_interval_title", placeholder: "Интервал")
+        return self.services.localizationProvider.string(forKey: "news_settings_interval_title",
+                                                         placeholder: "Интервал")
     }
     
     var articleSourceAvailabelLabelText: String {
-        return self.services.localizationProvider.string(forKey: "news_settings_article_sources_available_title", placeholder: "Показывать источник")
+        return self.services.localizationProvider.string(forKey: "news_settings_article_sources_available_title",
+                                                         placeholder: "Показывать источник")
     }
     
     var articleSourcesLabelText: String {
-        return self.services.localizationProvider.string(forKey: "news_settings_article_sources_title", placeholder: "Источники:")
+        return self.services.localizationProvider.string(forKey: "news_settings_article_sources_title",
+                                                         placeholder: "Источники:")
+    }
+    
+    var clearButtonTitle: String {
+        return self.services.localizationProvider.string(forKey: "news_settings_clear_button_title",
+                                                         placeholder: "Очистить данные")
     }
     
     private var newsSources: [NewsSource]

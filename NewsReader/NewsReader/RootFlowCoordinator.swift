@@ -53,6 +53,8 @@ class RootFlowCoordinator: FlowCoordinatorProtocol {
             self.showSettingsViewController(services: newsServices,
                                             newsSources: newsSources) {[weak viewModel] in
                 viewModel?.updateSettings()
+            } clearCacheClosure: {[weak viewModel] in
+                viewModel?.clearCache()
             }
         }
         
@@ -74,11 +76,16 @@ class RootFlowCoordinator: FlowCoordinatorProtocol {
     
     private func showSettingsViewController(services: NewsListServices,
                                             newsSources: [NewsSource],
-                                            updateClosure: @escaping VoidClosure) {
+                                            updateClosure: @escaping VoidClosure,
+                                            clearCacheClosure: @escaping VoidClosure) {
         let viewModel = SettingsViewModel(services: services,
                                           newsSources: newsSources)
         let viewController = SettingsViewController(viewModel)
         viewController.closeVCClosure = updateClosure
+        viewController.clearCacheClosure = {
+            services.clearCaches()
+            clearCacheClosure()
+        }
         navigator.show(viewController: viewController, animated: true)
     }
     

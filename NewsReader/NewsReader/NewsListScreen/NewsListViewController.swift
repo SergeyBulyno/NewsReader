@@ -147,7 +147,6 @@ final class NewsListViewController: UIViewController, ViewControllerProtocol {
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModel.newsItems)
         dataSource?.apply(snapshot)
-        
     }
     
     //MARK: - Layout Subviews

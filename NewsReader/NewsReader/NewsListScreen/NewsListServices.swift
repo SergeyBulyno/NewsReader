@@ -11,4 +11,10 @@ struct NewsListServices {
     let imageCacheService: ImageCacheService
     let databaseService: NewsDatabaseService
     let localizationProvider: LocalizationProvider
+    
+    func clearCaches() {
+        print("cache will clear!")
+        imageCacheService.clearCache()
+        databaseService.clearCache()
+    }
 }
