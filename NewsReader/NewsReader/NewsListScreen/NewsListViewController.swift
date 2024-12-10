@@ -182,7 +182,7 @@ final class NewsListViewController: UIViewController, ViewControllerProtocol {
         var snapshot = NSDiffableDataSourceSnapshot<Section, NewsItemViewModel>()
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModel.newsItems)
-        dataSource?.apply(snapshot)
+        dataSource?.applySnapshotUsingReloadData(snapshot)
     }
     
     @objc private func refresh(_ refreshControl: UIRefreshControl) {
