@@ -64,6 +64,12 @@ final class NewsListViewController: UIViewController, ViewControllerProtocol {
     private var collectionView: UICollectionView?
     private var dataSource: UICollectionViewDiffableDataSource<Section, NewsItemViewModel>?
     
+    lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = .gray
+            return refreshControl
+        }()
+    
     func setupController() {
         view.backgroundColor = .white
         self.title = self.viewModel.title
@@ -94,6 +100,8 @@ final class NewsListViewController: UIViewController, ViewControllerProtocol {
     private func setupCollectionView() {
         let collectionView = UICollectionView(frame: self.view.bounds,
                                               collectionViewLayout: listLayout)
+        collectionView.addSubview(refreshControl)
+        refreshControl.addTarget(self, action:#selector(refresh(_:)), for: .valueChanged)
         self.collectionView = collectionView
         view.addSubview(collectionView)
         collectionView.backgroundColor = .white
@@ -177,6 +185,10 @@ final class NewsListViewController: UIViewController, ViewControllerProtocol {
         dataSource?.apply(snapshot)
     }
     
+    @objc private func refresh(_ refreshControl: UIRefreshControl) {
+        refreshControl.endRefreshing()
+        viewModel.fetchData()
+    }
 }
 
 extension NewsListViewController: ViewControllerReloadableProtocol {

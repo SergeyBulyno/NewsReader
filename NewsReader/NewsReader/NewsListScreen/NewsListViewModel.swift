@@ -60,7 +60,7 @@ final class NewsListViewModel {
     }
     
     func updateSettings() {
-        
+        fetchData()
     }
     
     func clearCache() {
@@ -83,7 +83,6 @@ extension NewsListViewModel: ViewModelLoadableProtocol, ViewModelControllerProto
         
         Task { @MainActor in
             do {
-                
                 let remoteItems = try await self.services.parser.fetchAndParseFeed(urlSourcePairs: sources.map{ ($0.url, $0.name) })
                 let databaseService = self.services.databaseService
                 let updatedWithRead = databaseService.updateWithRead(remoteItems)
