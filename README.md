@@ -17,4 +17,4 @@ Main project architecture is Model-View-ViewModel + Coordinator (MVVM+C). The MV
 Realm is a noSQL mobile database that runs directly inside devices. Realm is using for news data persistence and managing when to update news views to reflect the latest data.
 
 ## Image caching
-Image caching is based on NSCache collaboration with Combine framework which provides a declarative Swift API for processing values over time.
+Image caching is based on NSCache's interaction with the Combine framework, which provides a declarative Swift API for processing values ​​over time.
