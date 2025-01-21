@@ -193,6 +193,7 @@ final class NewsListViewController: UIViewController, ViewControllerProtocol {
 
 extension NewsListViewController: ViewControllerReloadableProtocol {
     func reloadData() {
+        print("Reload data")
         updateSnapshot(animated: true)
     }
 }

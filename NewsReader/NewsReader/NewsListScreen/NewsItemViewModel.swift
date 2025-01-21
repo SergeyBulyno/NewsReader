@@ -9,48 +9,22 @@ import Foundation
 import UIKit
 
 class NewsItemViewModel {
-    var id: UUID {
-        return newsItem.id
-    }
-    
-    private(set) var newsItem: NewsItem
-
-    var title: String {
-        return newsItem.title
-    }
-
-    var description: String {
-        return newsItem.newsDescription
-    }
-
-    var pubDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd.MM.yyyy HH:mm"
-        return formatter.string(from: newsItem.pubDate)
-    }
-
-    var sourceName: String {
-        return newsItem.sourceName
-    }
-    
-    var link: String {
-        return newsItem.link
-    }
-
-    var imageUrl: String {
-        return newsItem.imageUrl
-    }
-
-    var isRead: Bool {
-        return newsItem.isRead
-    }
-
+    private(set) var id: UUID
+    private(set) var guid: String
+    private(set) var title: String
+    private(set) var newsDescription: String
+    private(set) var pubDate: Date
+    private(set) var pubDateFormatted: String
+    private(set) var sourceName: String
+    private(set) var link: String
+    private(set) var imageUrl: String
+    var isRead: Bool
+    var tagColor: UIColor?
     var isExpanded : Bool {
         didSet {
             updateLayoutClosure?()
         }
     }
-    
     var sourceAvailable: Bool = true
     var imageAvailable: Bool {
         return !imageUrl.isEmpty
@@ -62,18 +36,38 @@ class NewsItemViewModel {
     var markAsReadClosure: VoidClosure?
     private let imageCacheService: ImageCacheService
     init(newsItem: NewsItem,
+         dateFormatter: DateFormatter,
          isExtpandedMode: Bool = false,
          placeholderImage: UIImage,
          imageCacheService: ImageCacheService) {
-        self.newsItem = newsItem
+        self.id = newsItem.id
+        self.guid = newsItem.guid
+        
+        self.title = newsItem.title
+        self.newsDescription = newsItem.newsDescription
+        self.pubDate = newsItem.pubDate
+        self.pubDateFormatted = dateFormatter.string(from: pubDate)
+        self.sourceName = newsItem.sourceName
+        self.link = newsItem.link
+        self.imageUrl = newsItem.imageUrl
+        self.isRead = newsItem.isRead
+        
         self.isExpanded = isExtpandedMode
         self.placeholderImage = placeholderImage
         self.imageCacheService = imageCacheService
     }
     
     func fetchImage(urlString: String) async throws -> UIImage {
-    
         return try await self.imageCacheService.loadCachedImage(from: urlString)
+    }
+    
+    func updateTitle() {
+        print("!!Thread prepare: \(Thread.isMainThread)")
+        self.title = "[SB]" + title
+    }
+    func markAsRead() {
+        self.isRead = true
+        self.markAsReadClosure?()
     }
 }
 

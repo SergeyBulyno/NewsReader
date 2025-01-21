@@ -65,8 +65,8 @@ class RootFlowCoordinator: FlowCoordinatorProtocol {
     private func showNewsDetailsViewController(services: NewsListServices,
                                                newsItemVM: NewsItemViewModel) {
         let databaseService = services.databaseService
-        databaseService.markAsRead(newsItemVM.newsItem)
-        newsItemVM.markAsReadClosure?()
+        databaseService.markAsRead(newsItemVM.guid)
+        newsItemVM.markAsRead()
         
         let viewModel = NewsDetailsViewModel(services: services,
                                              newsItem: newsItemVM)

@@ -89,13 +89,19 @@ extension NewsListViewModel: ViewModelLoadableProtocol, ViewModelControllerProto
                 databaseService.saveNewsItems(updatedWithRead)
                 
                 let items = databaseService.fetchNewsItems(sourceNames: sources.map{ $0.name })
-                filterItems(items)
-                let vmItems = items.map {
-                    return NewsItemViewModel(newsItem: $0,
-                                             placeholderImage: placeholderImage,
-                                             imageCacheService: services.imageCacheService)
-                }
+                var vmItems = convertToViewModels(items: items)
+                vmItems = await makeBeauty(items: vmItems)
+                print("!!Thread db1: \(Thread.isMainThread)")
                 self.showData(items: vmItems)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    print("!!Thread db2: \(Thread.isMainThread)")
+                    self.showData(items: vmItems)
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    print("!!Thread db3: \(Thread.isMainThread)")
+                    self.showData(items: vmItems)
+                }
             } catch let error {
                 print((error as? RSSError)?.localizedDescription ?? "")
             }
@@ -104,9 +110,19 @@ extension NewsListViewModel: ViewModelLoadableProtocol, ViewModelControllerProto
     }
     
     private func showData(items: [NewsItemViewModel]) {
-        //print("\(Thread.isMainThread) ")
-        self.newsItems = items
-        self.reloadDataClosure?(items)
+        Task { @MainActor in
+            let update = await self.shouldUpdateData(items)
+            if update {
+                print("!!Thread update: \(Thread.isMainThread)")
+                self.newsItems = items
+                self.reloadDataClosure?(items)
+            }
+        }
+    }
+    
+    private func shouldUpdateData(_ items: [NewsItemViewModel]) async -> Bool {
+        print("!!Thread check: \(Thread.isMainThread)")
+        return self.newsItems != items
     }
     
     private func getEnabledSources() -> [NewsSource] {
@@ -116,17 +132,21 @@ extension NewsListViewModel: ViewModelLoadableProtocol, ViewModelControllerProto
         }
     }
     
-    private func filterItems(_ items: [NewsItem]) {
-        items.forEach { item in
-            let found = items.first{
-                if item === $0 {
-                    return false
-                }
-                return $0.id == item.id
+    private func convertToViewModels(items: [NewsItem]) -> [NewsItemViewModel] {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd.MM.yyyy HH:mm"
+            let vmItems = items.map {
+                return NewsItemViewModel(newsItem: $0,
+                                         dateFormatter: formatter,
+                                         placeholderImage: self.placeholderImage,
+                                         imageCacheService: self.services.imageCacheService)
             }
-            if found != nil {
-                print("!!!!!id\(item) - \(found!)")
-            }
-        }
+        return vmItems
     }
+    
+    private func makeBeauty(items: [NewsItemViewModel]) async -> [NewsItemViewModel] {
+        items.forEach({ $0.updateTitle()})
+        return items
+    }
+    
 }

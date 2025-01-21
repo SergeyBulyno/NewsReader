@@ -196,14 +196,14 @@ class NewsListCollectionViewCell: UICollectionViewCell {
     private func updateData(_ viewModel: NewsItemViewModel) {
         titleLabel.text = viewModel.title
         newsReadView.isHidden = viewModel.isRead
-        pubDateLabel.text = viewModel.pubDate
+        pubDateLabel.text = viewModel.pubDateFormatted
         sourceLabel.isHidden = !viewModel.sourceAvailable
         if viewModel.sourceAvailable {
             sourceLabel.text = viewModel.sourceName
         }
         loadImageView(loadingImageView, from: viewModel)
         updateExpandable(viewModel.isExpanded)
-        subtitleLabel.text = viewModel.description
+        subtitleLabel.text = viewModel.newsDescription
         viewModel.markAsReadClosure = { [weak self] in
             self?.newsReadView.isHidden = viewModel.isRead
         }

@@ -32,11 +32,17 @@ class NewsDatabaseService {
         })
     }
     
+    func fetchItem(forID id: String) -> NewsItem? {
+        return db.fetchObject(by: NewsItem.self, key: id)
+    }
+    
+    
     func fetchAllNews() -> [NewsItem] {
         return db.fetch(by: NewsItem.self)
     }
     
-    func markAsRead(_ item: NewsItem) {
+    func markAsRead(_ itemID: String) {
+        guard let item = fetchItem(forID: itemID) else { return }
         try? db.update({
             item.isRead = true
         })
